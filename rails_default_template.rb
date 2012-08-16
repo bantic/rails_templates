@@ -115,6 +115,10 @@ def html_to_slim(source)
   Haml2Slim.convert!(haml)
 end
 
+def app_name_to_class_name(app_name)
+  app_name.split(/-|_/).map {|word| word.capitalize}.join
+end
+
 @current_recipe = nil
 @configs = {}
 
@@ -130,7 +134,6 @@ def before_config(&block); @before_configs[@current_recipe] = block; end
 @current_recipe = "rvmrc-cory"
 @before_configs["rvmrc-cory"].call if @before_configs["rvmrc-cory"]
 say_recipe 'rvmrc-cory'
-
 
 config = {}
 @configs[@current_recipe] = config
@@ -431,6 +434,7 @@ if yes_wizard?("Use activeadmin?")
 
   after_bundler do
     generate "active_admin:install"
+    run "rake db:migrate"
   end
 end
 
@@ -445,14 +449,12 @@ config = {}
 say_recipe 'livereload'
 config = {}
 
-if yes_wizard?("User Rack::LiveReload?")
-  prefs[:livereload] = true
-  gem 'rack-livereload', :group => [:development]
+prefs[:livereload] = true
+gem 'rack-livereload', :group => [:development]
 
-  after_bundler do
-    inject_into_file "config/environments/development.rb", :after => "#{app_name.classify}::.Application.configure do\n" do
-      "config.middleware.insert_before(Rack::Lock, Rack::LiveReload)\n"
-    end
+after_bundler do
+  inject_into_file "config/environments/development.rb", :after => "#{app_name_to_class_name(app_name)}::Application.configure do\n" do
+    "config.middleware.insert_before(Rack::Lock, Rack::LiveReload)\n"
   end
 end
 
@@ -469,10 +471,10 @@ remove_file 'public/index.html'
 remove_file 'app/assets/images/rails.png'
 after_bundler do
   generate 'controller home index'
-  say_wizard "Appname.classify: #{app_name.classify}"
-  inject_into_file 'config/routes.rb', :after => "#{app_name.classify}::Application.routes.draw do\n" do
-    "root :to => 'home#index'"
+  inject_into_file 'config/routes.rb', :after => "#{app_name_to_class_name(app_name)}::Application.routes.draw do\n" do
+    "root :to => 'home#index'\n"
   end
+  gsub_file 'config/routes.rb', 'get "home/index"\n', ''
 end
 
 @configs[@current_recipe] = config
@@ -490,13 +492,13 @@ gem 'growl_notify', :group => [:development]
 
 config[:guards] = ['bundler']
 
-if prefs[:rspec]
-  gem 'guard-rspec', :group => [:development]
-  config[:guards] << 'rspec'
-end
 if prefs[:livereload]
   gem 'guard-livereload', :group => [:development]
   config[:guards] << 'livereload'
+end
+if prefs[:rspec]
+  gem 'guard-rspec', :group => [:development]
+  config[:guards] << 'rspec'
 end
 
 after_bundler do
