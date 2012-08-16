@@ -275,6 +275,8 @@ after_everything do
     run "heroku domains:add #{config['domain']}"
   end
 
+  git :config => 'heroku.remote production'
+
   git :push => "#{config['staging'] ? 'staging' : 'heroku'} master" if config['deploy']
 end
 
