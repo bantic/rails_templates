@@ -1,0 +1,3 @@
+Adapted from rails_apps_composer
+
+To use, do: `rails new MYAPP -m <template_file> -J -T`
