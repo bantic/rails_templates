@@ -1,3 +1,6 @@
-Adapted from rails_apps_composer
+## Adapted from rails_apps_composer
 
 To use, do: `rails new MYAPP -m <template_file> -J -T`
+
+## changelog
+ * sep 18 2012 -- add guard-pow, don't ask about postgres, don't ask about bootstrap, don't ask about heroku (and don't set up heroku automatically)

@@ -171,10 +171,12 @@ run "rvm gemset list"
 say_recipe 'ActiveRecord'
 
 config = {}
-config['database'] = multiple_choice("Which database are you using?", [["MySQL", "mysql"], ["PostgreSQL", "postgresql"], ["SQLite", "sqlite3"]]) if true && true unless config.key?('database')
-config['auto_create'] = yes_wizard?("Automatically create database with default configuration?") if true && true unless config.key?('auto_create')
+# default to postgres, don't waste time asking
+# config['database'] = multiple_choice("Which database are you using?", [["MySQL", "mysql"], ["PostgreSQL", "postgresql"], ["SQLite", "sqlite3"]]) if true && true unless config.key?('database')
+config['database'] = "postgresql"
+config['auto_create'] = true # yes_wizard?("Automatically create database with default configuration?") if true && true unless config.key?('auto_create')
 if config['auto_create'] && config['database'] == "postgresql"
-  config['create_user'] = yes_wizard?("Automatically create postgres superuser '#{app_name}'?")
+  config['create_user'] = true # yes_wizard?("Automatically create postgres superuser '#{app_name}'?")
 end
 @configs[@current_recipe] = config
 
@@ -240,7 +242,8 @@ end
 say_recipe 'Heroku'
 
 config = {}
-config['create'] = yes_wizard?("Automatically create appname.heroku.com?") if true && true unless config.key?('create')
+# don't set up heroku automatically anymore
+config['create'] = false # yes_wizard?("Automatically create appname.heroku.com?") if true && true unless config.key?('create')
 config['staging'] = yes_wizard?("Create staging app? (appname-staging.heroku.com)") if config['create'] && true unless config.key?('staging')
 config['domain'] = ask_wizard("Specify custom domain (or leave blank):") if config['create'] && true unless config.key?('domain')
 config['deploy'] = yes_wizard?("Deploy immediately?") if config['create'] && true unless config.key?('deploy')
@@ -332,7 +335,9 @@ say_recipe 'frontend'
 # Application template recipe for the rails_apps_composer. Change the recipe here:
 # https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/frontend.rb
 
-prefs[:frontend] = multiple_choice "Front-end framework?", [["None", "none"], ["Twitter Bootstrap", "bootstrap"]] unless prefs.has_key? :frontend
+# prefs[:frontend] = multiple_choice "Front-end framework?", [["None", "none"], ["Twitter Bootstrap", "bootstrap"]] unless prefs.has_key? :frontend
+# don't need to ask, use bootstrap
+prefs[:frontend] = "bootstrap"
 if prefer :frontend, 'bootstrap'
   prefs[:bootstrap] = 'sass'
 end
@@ -489,6 +494,7 @@ config = {}
 
 gem 'guard', :group => [:development]
 gem 'guard-bundler', :group => [:development]
+gem 'guard-pow', :group => [:development]
 gem 'growl', :group => [:development]
 gem 'growl_notify', :group => [:development]
 
