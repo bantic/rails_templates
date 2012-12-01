@@ -251,8 +251,6 @@ config['deploy'] = yes_wizard?("Deploy immediately?") if config['create'] && tru
 
 heroku_name = app_name.gsub('_','')
 
-gem 'heroku', :group => [:development]
-
 after_everything do
   if config['create']
     say_wizard "Creating Heroku app '#{heroku_name}.heroku.com'"  
