@@ -3,4 +3,5 @@
 To use, do: `rails new MYAPP -m <template_file> -J -T`
 
 ## changelog
+ * dec 1 2012 -- don't include heroku gem, we now use heroku toolbelt (and the recipe is disabled anyway)
  * sep 18 2012 -- add guard-pow, don't ask about postgres, don't ask about bootstrap, don't ask about heroku (and don't set up heroku automatically)
